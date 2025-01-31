@@ -1,0 +1,27 @@
+{
+  "name": "prism-test-client",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "next dev --port 3002",
+    "build": "next build",
+    "start": "next start --port 3002"
+  },
+  "dependencies": {
+    "@rainbow-me/rainbowkit": "^2.2.0",
+    "@tanstack/react-query": "^5.55.3",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.4",
+    "next": "^14.2.10",
+    "prism-test-client": "file:",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "viem": "2.17.0",
+    "wagmi": "^2.12.17"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.8",
+    "@types/react": "19.0.8",
+    "typescript": "5.5.2"
+  }
+}
