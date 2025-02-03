@@ -38,19 +38,18 @@ const Home: NextPage = () => {
     const prismClient = new PrismClient(publisher, websiteUrl);
     setPrismClient(prismClient);
     if (address && prismClient) {
-      
-      // uncomment this to trigger auction
 
-      // setIsLoading(true);
-      // console.log('triggering auction');
-      // prismClient.triggerAuction(address).then(
-      //   (winner: any) => {setWinner(winner);console.log('Winner>>', winner);
-      // }).catch((error: any) => {
-      //   setError(error);
-      //   console.error('Error triggering auction:', error);
-      // }).finally(() => {
-      //   setIsLoading(false); // Stop loading
-      // });
+      setIsLoading(true);
+      console.log('triggering auction');
+      prismClient.triggerAuction(address).then(
+        (winner: any) => {
+          setWinner(winner); console.log('Winner>>', winner);
+        }).catch((error: any) => {
+          setError(error);
+          console.error('Error triggering auction:', error);
+        }).finally(() => {
+          setIsLoading(false); // Stop loading
+        });
     }
   }, [address]);
 
@@ -109,95 +108,49 @@ const Home: NextPage = () => {
       <main className={styles.main}>
 
 
-        <div className={styles.bannerContainer}>
-          <div>
+  
 
-
-            <p className={styles.description}>
-              Test your advertising image of dimensions 300 x 250 pixels<br></br>
-              paste the url of the banner image below.
-            </p>
-
-
-            <div className={styles.inputContainer}>
-              <input
-                type="text"
-                value={bannerSource}
-                onChange={(e) => setBannerSource(e.target.value)}
-                className={styles.inputField}
-                placeholder="Enter Banner URL"
-              />
-            </div>
-            {/* <button onClick={(e:any) => setBannerSource(e.target.value)} className={styles.searchButton}>
-                Search
-              </button> */}
-
-
-          </div>
-
-          <Image
-            src={bannerSource}
-            width={300}
-            height={250}
-            alt="Banner"
-            className={styles.banner}
-            onError={(e: any) => {
-              e.target.src = bannerSource == '' ? 'https://placehold.co/300x250' : 'https://placehold.co/300x250?text=Invalid+Banner+Image';
-            }}
-            onLoadingComplete={() => setIsLoading(false)}
-          />
-
-        </div>
-
-        <div className={styles.mockContainer}>
-          <div className={styles.mock}>
-
-      
-
-
-          </div>
+        {/* <div className={styles.mockContainer}>
+          <div className={styles.mock}></div>
+           <div className={styles.mock}>&nbsp;</div>
           <div className={styles.mock}>&nbsp;</div>
           <div className={styles.mock}>&nbsp;</div>
-          <div className={styles.mock}>&nbsp;</div>
-        </div>
+        </div> */}
 
 
-      
-        {process.env.NODE_ENV === 'development' && 
+
         <div className={styles.inputContainer}>
-              <input
-                type="text"
-                value={inputValue}
-                onChange={handleInputChange} // Add this line
-                className={styles.inputField}
-                placeholder="Enter wallet address"
-              />
-              <button onClick={handleSearch} className={styles.searchButton}>
-                Search
-              </button>
-            </div> 
-        }
+          <input
+            type="text"
+            value={inputValue}
+            onChange={handleInputChange} // Add this line
+            className={styles.inputField}
+            placeholder="Enter wallet address"
+          />
+          <button onClick={handleSearch} className={styles.searchButton}>
+            Search
+          </button>
+        </div>
 
+        {winner?.banner_ipfs_uri && !isLoading && (
+          <a
+            className={styles.card}
+            href="https://www.berachain.com/"
+            target="_blank"
+            onClick={handleLinkClick}
+          >
+            <h2>{winner.campaign_name}</h2>
+            <Image
+              width={500}
+              height={500}
+              src={winner.banner_ipfs_uri}
+              alt={winner.campaign_name}
+              onLoad={() => sendCompletionFeedback()}
+            />
+          </a>
+        )}
 
-            {process.env.NODE_ENV === 'development' && winner?.banner_ipfs_uri && !isLoading && (
-            <a
-              className={styles.card}
-              href="https://www.berachain.com/"
-              target="_blank"
-              onClick={handleLinkClick}
-            >
-              <h2>{winner.campaign_name}</h2>
-              <Image
-                width={500}
-                height={500}
-                src={winner.banner_ipfs_uri}
-                alt={winner.campaign_name}
-                onLoad={() => sendCompletionFeedback()}
-              />
-            </a>
-          )}
-
-        {isLoading && process.env.NODE_ENV === 'development' &&
+        {isLoading &&
           <div className={styles.loaderContainer}>
             <div className={styles.loader}></div>
           </div>
@@ -221,6 +174,42 @@ const Home: NextPage = () => {
         <div>
           <p>Link clicked: {clickCount} times</p>
           <p>Image rendered: {renderCount} times</p>
+        </div>
+
+        <div className={styles.bannerContainer}>
+          <div>
+
+
+            <p className={styles.description}>
+              Test your advertising image of dimensions 300 x 250 pixels<br></br>
+              paste the url of the banner image below.
+            </p>
+
+
+            <div className={styles.inputContainer}>
+              <input
+                type="text"
+                value={bannerSource}
+                onChange={(e) => setBannerSource(e.target.value)}
+                className={styles.inputField}
+                placeholder="Enter Banner URL"
+              />
+            </div>
+            {/* <button onClick={(e:any) => setBannerSource(e.target.value)} className={styles.searchButton}>
+                Search
+              </button> */}
+          </div>
+          <Image
+            src={bannerSource}
+            width={300}
+            height={250}
+            alt="Banner"
+            className={styles.banner}
+            onError={(e: any) => {
+              e.target.src = bannerSource == '' ? 'https://placehold.co/300x250' : 'https://placehold.co/300x250?text=Invalid+Banner+Image';
+            }}
+            onLoadingComplete={() => setIsLoading(false)}
+          />
         </div>
       </main>
 
