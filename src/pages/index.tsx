@@ -38,17 +38,19 @@ const Home: NextPage = () => {
     const prismClient = new PrismClient(publisher, websiteUrl);
     setPrismClient(prismClient);
     if (address && prismClient) {
-      setIsLoading(true);
-      console.log('triggering auction');
-      prismClient.triggerAuction(address).then((winner: any) => {
-        setWinner(winner);
-        console.log('Winner>>', winner);
-      }).catch((error: any) => {
-        setError(error);
-        console.error('Error triggering auction:', error);
-      }).finally(() => {
-        setIsLoading(false); // Stop loading
-      });
+      
+      // uncomment this to trigger auction
+
+      // setIsLoading(true);
+      // console.log('triggering auction');
+      // prismClient.triggerAuction(address).then(
+      //   (winner: any) => {setWinner(winner);console.log('Winner>>', winner);
+      // }).catch((error: any) => {
+      //   setError(error);
+      //   console.error('Error triggering auction:', error);
+      // }).finally(() => {
+      //   setIsLoading(false); // Stop loading
+      // });
     }
   }, [address]);
 
@@ -133,7 +135,6 @@ const Home: NextPage = () => {
 
           </div>
 
-
           <Image
             src={bannerSource}
             width={300}
@@ -151,7 +152,19 @@ const Home: NextPage = () => {
         <div className={styles.mockContainer}>
           <div className={styles.mock}>
 
-            {/* <div className={styles.inputContainer}>
+      
+
+
+          </div>
+          <div className={styles.mock}>&nbsp;</div>
+          <div className={styles.mock}>&nbsp;</div>
+          <div className={styles.mock}>&nbsp;</div>
+        </div>
+
+
+      
+        {process.env.NODE_ENV === 'development' && 
+        <div className={styles.inputContainer}>
               <input
                 type="text"
                 value={inputValue}
@@ -162,25 +175,11 @@ const Home: NextPage = () => {
               <button onClick={handleSearch} className={styles.searchButton}>
                 Search
               </button>
-            </div> */}
-
-
-
-          </div>
-          <div className={styles.mock}>&nbsp;</div>
-          <div className={styles.mock}>&nbsp;</div>
-          <div className={styles.mock}>&nbsp;</div>
-        </div>
-
-        {isLoading &&
-          <div className={styles.loaderContainer}>
-            <div className={styles.loader}></div>
-          </div>
+            </div> 
         }
 
-        <div className={styles.grid}>
 
-          {winner?.banner_ipfs_uri && !isLoading && (
+            {process.env.NODE_ENV === 'development' && winner?.banner_ipfs_uri && !isLoading && (
             <a
               className={styles.card}
               href="https://www.berachain.com/"
@@ -197,6 +196,15 @@ const Home: NextPage = () => {
               />
             </a>
           )}
+
+        {isLoading && process.env.NODE_ENV === 'development' &&
+          <div className={styles.loaderContainer}>
+            <div className={styles.loader}></div>
+          </div>
+        }
+
+        <div className={styles.grid}>
+
 
           {/* <a
                 className={styles.card}
