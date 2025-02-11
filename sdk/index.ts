@@ -86,10 +86,7 @@ export class PrismClient {
 
         this.web3Api.accountingContract.isPublisher(publisherAddress).then((isPublisher: boolean) => {
             if (!isPublisher) throw new Error('Publisher not whitelisted, please register on www.prismprotocol.xyz/publishers');
-            this.web2Api.getAllPublisherStatsForOwnerByWebsiteUrl(publisherAddress, websiteUrl).then((stats: any) => {
-                console.log('stats::', stats);
-                if (stats.length < 1) throw new Error('Website URL not found, please register on www.prismprotocol.xyz/publishers');
-            });
+
         });
         this.publisherAddress = publisherAddress;
         this.websiteUrl = websiteUrl;
