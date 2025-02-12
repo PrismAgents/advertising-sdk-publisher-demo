@@ -9,7 +9,7 @@ class Web3Api {
     constructor() {
         this.url = 'https://berachain-bartio.g.alchemy.com/v2/X7G_KDBnhQ1LkmJEgEzNTW9XxrqCD4uZ';
         const provider = new ethers.JsonRpcProvider(this.url);
-        this.accountingContract = new ethers.Contract('0xEa6eC7515b78B1Bd86F92e9E03F07eC4189807d9', accountingAbi, provider);
+        this.accountingContract = new ethers.Contract('0xd64853441D9b679ab0d5F5f8820eD97DA48966A6', accountingAbi, provider);
     }
 }
 
