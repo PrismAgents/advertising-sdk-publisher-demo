@@ -6,20 +6,14 @@ import {
   optimism,
   polygon,
   sepolia,
-  berachainTestnetbArtio
+  arbitrumSepolia
 } from 'wagmi/chains';
 
 export const  wagmiConfig = getDefaultConfig({
-  appName: 'RainbowKit App',
-  projectId: 'YOUR_PROJECT_ID',
+  appName: 'Prism-Tint Frontend',
+  projectId: 'a7649e735f89fc5e232cecc7fa1d0675',
   chains: [
-    berachainTestnetbArtio,
-    mainnet,
-    polygon,
-    optimism,
-    arbitrum,
-    base,
-    ...(process.env.NEXT_PUBLIC_ENABLE_TESTNETS === 'true' ? [sepolia] : []),
+    arbitrumSepolia,
   ],
   ssr: true,
 });

@@ -9,8 +9,6 @@ import { wagmiConfig } from '../wagmi';
 import { PrismClient } from '../../sdk';
 import Image from 'next/image';
 
-const publisher1 = '0x4efD2760065103225b5f861C165Fe41AC5974AD7';
-const publisher2 = '0xc3B17A5a49c00e4e4551B6233F9a11Ed993B9685';
 const publisher3 = '0xFa214723917091b78a0624d0953Ec1BD35F723DC';
 const publisher = publisher3;
 const websiteUrl = 'berachain.com';
@@ -40,7 +38,6 @@ const Home: NextPage = () => {
     if (address && prismClient) {
 
       setIsLoading(true);
-      console.log('triggering auction');
       prismClient.triggerAuction(address).then(
         (winner: any) => {
           setWinner(winner); console.log('Winner>>', winner);

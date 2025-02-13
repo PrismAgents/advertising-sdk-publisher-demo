@@ -7,9 +7,10 @@ class Web3Api {
     public accountingContract: any;
     public url: any;
     constructor() {
-        this.url = 'https://berachain-bartio.g.alchemy.com/v2/X7G_KDBnhQ1LkmJEgEzNTW9XxrqCD4uZ';
+        this.url = process.env.NEXT_PUBLIC_NETWORK_RPC_URL;
+        console.log('this.url', this.url);
         const provider = new ethers.JsonRpcProvider(this.url);
-        this.accountingContract = new ethers.Contract('0xd64853441D9b679ab0d5F5f8820eD97DA48966A6', accountingAbi, provider);
+        this.accountingContract = new ethers.Contract(process.env.NEXT_PUBLIC_ARBITRUM_SEPOLIA_PRISM_ACCOUNTING_CONTRACT_ADDRESS!, accountingAbi, provider);
     }
 }
 
@@ -17,12 +18,11 @@ class Web2Api {
     public url: any;
     constructor() {
         const isProd = process.env.NODE_ENV === 'production';
-        this.url = isProd ? `https://prismprotocol.xyz/api` : `http://localhost:3001/api`;
+        this.url = isProd ? process.env.NEXT_PUBLIC_PRISM_API_URL : `http://localhost:3001/api`;
     }
 
     async triggerAuction(wallet: string,publisher: string): Promise<any> {
         try {
-            console.log('triggerAuction', publisher, wallet);
             return await this.fetchData(`/auction/${wallet}/${publisher}`, 'POST');
         } catch (error) {
             console.error('Error in triggerAuction:', error);
@@ -93,7 +93,6 @@ export class PrismClient {
     }
 
     async triggerAuction(wallet: string): Promise<any> {
-        console.log('sdk triggerAuction wallet', wallet);
         return this.web2Api.triggerAuction(wallet,this.publisherAddress);
     }
 
