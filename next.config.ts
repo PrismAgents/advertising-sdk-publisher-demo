@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // basePath: '/client',
   reactStrictMode: true,
   webpack: (config:any) => {
     config.externals.push('pino-pretty', 'lokijs', 'encoding')
