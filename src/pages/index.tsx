@@ -15,18 +15,18 @@ const publisher = publisher3;
 const websiteUrl = 'berachain.com';
 
 const callPrismClient = async (action: string, address: string, publisher: string, winnerId?: any): Promise<any> => {
-  fetch('/api/route', {
+  return fetch('/api/route', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       action: action,
       address: address,
       publisher: publisher,
-      winnerId: winnerId?.id
+      winnerId: winnerId
     }),
   })
-    .then(res => res.json())
-    .catch(error => console.error("CORS error:", error));
+    .then((res) => res.json())
+    .catch(error => console.error("Error:", error));
 }
 
 const Home: NextPage = () => {
@@ -47,22 +47,35 @@ const Home: NextPage = () => {
   };
 
   useEffect(() => {
-    if (address) callPrismClient('auction', address, publisher)
-      .then((winner: any) => setWinner(winner))
+    setIsLoading(true);
+    const fetchData = async () => {
+      if (address) {
+        setIsLoading(true);
+        const winner = await callPrismClient('auction', address, publisher);
+        setWinner(winner.data);
+      }
+    };
+    fetchData();
+    setIsLoading(false);
   }, [address]);
 
   const handleLinkClick = () => {
-    if (address) callPrismClient('handleUserClick', address, publisher, winner.id);
+    if (address && winner) callPrismClient('handleUserClick', address, publisher, winner.id)
+      .then(() =>
+        setClickCount(prevCount => prevCount + 1)
+      );
   }
   const sendCompletionFeedback = () => {
-    if (address) callPrismClient('sendViewedFeedback', address, publisher, winner.id);
+    if (address && winner) callPrismClient('sendViewedFeedback', address, publisher, winner.id)
+      .then(() => setRenderCount(prevCount => prevCount + 1));
   }
 
   useEffect(() => {
-    if (winner && winner.id != 'default-campaign') {
+    if (winner) {
       setRenderCount(prevCount => prevCount + 1);
     }
   }, [winner]);
+
 
   return (
     <div className={styles.container}>
@@ -149,8 +162,8 @@ const Home: NextPage = () => {
 
 
         <div>
-          <p>Link clicked: {clickCount} times</p>
-          <p>Image rendered: {renderCount} times</p>
+          {/* <p>Link clicked: {clickCount} times</p>
+          <p>Image rendered: {renderCount} times</p> */}
         </div>
 
         <div className={styles.bannerContainer}>
