@@ -15,7 +15,7 @@ const publisher = publisher3;
 const websiteUrl = 'berachain.com';
 
 const callPrismClient = async (action: string, address: string, publisher: string, winnerId?: any): Promise<any> => {
-  return fetch('/api/route', {
+  return fetch('client/api/route', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
