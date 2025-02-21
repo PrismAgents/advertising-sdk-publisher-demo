@@ -6,16 +6,30 @@ import { useAccount } from 'wagmi';
 import { getEthersSigner } from '../signer';
 import styles from '../styles/Home.module.css';
 import { wagmiConfig } from '../wagmi';
-import { PrismClient } from '../../sdk';
+import axios from 'axios';
 import Image from 'next/image';
 
+// This has to be whitelisted in the prism contract
 const publisher3 = '0xFa214723917091b78a0624d0953Ec1BD35F723DC';
 const publisher = publisher3;
 const websiteUrl = 'berachain.com';
 
-const Home: NextPage = () => {
-  // init prism SDK
+const callPrismClient = async (action: string, address: string, publisher: string, winnerId?: any): Promise<any> => {
+  fetch('/api/route', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: action,
+      address: address,
+      publisher: publisher,
+      winnerId: winnerId?.id
+    }),
+  })
+    .then(res => res.json())
+    .catch(error => console.error("CORS error:", error));
+}
 
+const Home: NextPage = () => {
   const { address } = useAccount()
   const [winner, setWinner] = useState<any | null>(null);
   const [inputValue, setInputValue] = useState<string>('');
@@ -24,8 +38,8 @@ const Home: NextPage = () => {
   const [clickCount, setClickCount] = useState<number>(0);
   const [renderCount, setRenderCount] = useState<number>(0);
   const [impressionsCounter, setImpressionsCounter] = useState<number>(0);
-  const [prismClient, setPrismClient] = useState<PrismClient | null>(null);
 
+  const [prismClient, setPrismClient] = useState<any | null>(null);
   const [bannerSource, setBannerSource] = useState<string>('');
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -33,49 +47,15 @@ const Home: NextPage = () => {
   };
 
   useEffect(() => {
-    const prismClient = new PrismClient(publisher, websiteUrl);
-    setPrismClient(prismClient);
-    if (address && prismClient) {
-
-      setIsLoading(true);
-      prismClient.triggerAuction(address).then(
-        (winner: any) => {
-          setWinner(winner); console.log('Winner>>', winner);
-        }).catch((error: any) => {
-          setError(error);
-          console.error('Error triggering auction:', error);
-        }).finally(() => {
-          setIsLoading(false); // Stop loading
-        });
-    }
+    if (address) callPrismClient('auction', address, publisher)
+      .then((winner: any) => setWinner(winner))
   }, [address]);
 
-  const handleSearch = () => {
-    if (inputValue && prismClient) {
-      setIsLoading(true); // Start loading
-      prismClient.triggerAuction(inputValue).then((winner: any) => {
-
-        setWinner(winner);
-        setImpressionsCounter(prevCount => prevCount + 1);
-
-        console.log('Winner>>', winner);
-      }).finally(() => {
-        setIsLoading(false); // Stop loading
-      });
-    }
-  };
-
   const handleLinkClick = () => {
-    prismClient && prismClient.handleUserClick(winner.campaign_id).then(() => {
-      setClickCount(prevCount => prevCount + 1);
-    });
-  };
-
+    if (address) callPrismClient('handleUserClick', address, publisher, winner.id);
+  }
   const sendCompletionFeedback = () => {
-    console.log('feedback', winner)
-    if (winner && winner.id != 'default-campaign') {
-      prismClient && prismClient.sendViewedFeedback(winner.campaign_id);
-    }
+    if (address) callPrismClient('sendViewedFeedback', address, publisher, winner.id);
   }
 
   useEffect(() => {
@@ -105,7 +85,7 @@ const Home: NextPage = () => {
       <main className={styles.main}>
 
 
-  
+
 
         {/* <div className={styles.mockContainer}>
           <div className={styles.mock}></div>
@@ -116,7 +96,7 @@ const Home: NextPage = () => {
 
 
 
-        <div className={styles.inputContainer}>
+        {/* <div className={styles.inputContainer}>
           <input
             type="text"
             value={inputValue}
@@ -127,7 +107,7 @@ const Home: NextPage = () => {
           <button onClick={handleSearch} className={styles.searchButton}>
             Search
           </button>
-        </div>
+        </div> */}
 
         {winner?.banner_ipfs_uri && !isLoading && (
           <a

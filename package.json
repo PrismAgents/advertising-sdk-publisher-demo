@@ -10,16 +10,20 @@
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.2.0",
     "@tanstack/react-query": "^5.55.3",
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "ethers": "^6.13.4",
-    "next": "^14.2.10",
-    "prism-test-client": "file:",
+    "next": "15.0.1",
+    "prism-sdk": "^1.1.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "swr": "^2.3.2",
     "viem": "2.17.0",
     "wagmi": "^2.12.17"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/node": "^20.14.8",
     "@types/react": "19.0.8",
     "typescript": "5.5.2"
