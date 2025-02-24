@@ -27,6 +27,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       default:
         break;
     }
+    if(responseData.error) {
+      return res.status(500).json({ error: responseData.error });
+    }
     return res.status(200).json({
       data: responseData,
     });
