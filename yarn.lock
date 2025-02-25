@@ -2753,10 +2753,10 @@ preact@^10.16.0:
   resolved "https://registry.npmjs.org/preact/-/preact-10.24.3.tgz"
   integrity sha512-Z2dPnBnMUfyQfSQ+GBdsGa16hz35YmLmtTLhM169uW944hYL6xzTYkJjC07j+Wosz733pMWx0fgON3JNw1jJQA==
 
-prism-sdk@^1.1.3:
-  version "1.1.3"
-  resolved "https://registry.npmjs.org/prism-sdk/-/prism-sdk-1.1.3.tgz"
-  integrity sha512-JGH4lVWnwGc/VaOvZgVnR1nc3KzMmf7HLZYV9Ckl8D++pQFiIcUsRjWUvb/Y2WJ0Q8I5YUJaoddyo1tuHMJ5OQ==
+prism-sdk@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/prism-sdk/-/prism-sdk-1.1.4.tgz#ad266bd41161d485d3047a2fbfc12ff08e60b9ac"
+  integrity sha512-C3p9yMVA+0wjBGYW5dcBGR09w63C2k4veoIJnyOCQ8J5fI19CajE+u1Sa6ZvPIy4VBXn9OWkOX0rGyRepJoiqg==
   dependencies:
     dotenv "^16.4.7"
     ethers "^6.13.4"

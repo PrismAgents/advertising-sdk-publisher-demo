@@ -14,18 +14,24 @@ const publisher3 = '0xFa214723917091b78a0624d0953Ec1BD35F723DC';
 const publisher = publisher3;
 const websiteUrl = 'berachain.com';
 
-const callPrismClient = async (action: string, address: string, publisher: string, winnerId?: any): Promise<any> => {
+const callPrismClient = async (
+  path: string,
+  userAddress: string,
+  publisherAddress: string,
+  hostUrl: string | null,
+  auctionWinnerId: string | null
+): Promise<any> => {
   return fetch('client/api/route', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      action: action,
-      address: address,
-      publisher: publisher,
-      winnerId: winnerId
+      path: path,
+      userAddress: userAddress,
+      publisherAddress: publisherAddress,
+      hostUrl: hostUrl,
+      auctionWinnerId: auctionWinnerId
     }),
-  })
-    .then((res) => res.json())
+  }).then((res) => res.json())
     .catch(error => console.error("Error:", error));
 }
 
@@ -51,7 +57,13 @@ const Home: NextPage = () => {
     const fetchData = async () => {
       if (address) {
         setIsLoading(true);
-        const winner = await callPrismClient('auction', address, publisher);
+        const winner = await callPrismClient(
+          'trigger-auction',
+          address,
+          publisher,
+          null,
+          null
+        );
         setWinner(winner.data);
       }
     };
@@ -60,13 +72,13 @@ const Home: NextPage = () => {
   }, [address]);
 
   const handleLinkClick = () => {
-    if (address && winner) callPrismClient('handleUserClick', address, publisher, winner.id)
+      if (address && winner) callPrismClient('handleUserClick', address, publisher, websiteUrl, winner.id)
       .then(() =>
-        setClickCount(prevCount => prevCount + 1)
+        setClickCount((prevCount: number) => prevCount + 1)
       );
   }
   const sendCompletionFeedback = () => {
-    if (address && winner) callPrismClient('sendViewedFeedback', address, publisher, winner.id)
+    if (address && winner) callPrismClient('handleViewedFeedback', address, publisher, websiteUrl, winner.id)
       .then(() => setRenderCount(prevCount => prevCount + 1));
   }
 
@@ -198,7 +210,7 @@ const Home: NextPage = () => {
             onError={(e: any) => {
               e.target.src = bannerSource == '' ? 'https://placehold.co/300x250' : 'https://placehold.co/300x250?text=Invalid+Banner+Image';
             }}
-            onLoadingComplete={() => setIsLoading(false)}
+            onLoad={() => setIsLoading(false)}
           />
         </div>
       </main>
