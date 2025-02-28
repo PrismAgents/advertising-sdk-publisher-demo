@@ -12,6 +12,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     const prismClient = new PrismClient(process.env.PRISM_SDK_API_KEY!);
     switch (path) {
       case 'trigger-auction': {
+        console.log('trigger-auction', publisherAddress, userAddress);
         responseData = await prismClient.triggerAuction(publisherAddress,userAddress);
         break;
       }
