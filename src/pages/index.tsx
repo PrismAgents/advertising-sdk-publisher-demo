@@ -59,8 +59,8 @@ const Home: NextPage = () => {
         setIsLoading(true);
         const winner = await callPrismClient(
           'trigger-auction',
-          address,
           publisher,
+          address,
           null,
           null
         );
