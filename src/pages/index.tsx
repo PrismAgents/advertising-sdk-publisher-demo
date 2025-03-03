@@ -21,7 +21,7 @@ const callPrismClient = async (
   hostUrl: string | null,
   auctionWinnerId: string | null
 ): Promise<any> => {
-  return fetch('client/api/route', {
+  return fetch('/api/route', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
