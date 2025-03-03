@@ -23,7 +23,10 @@ const callPrismClient = async (
 ): Promise<any> => {
   return fetch('client/api/route', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*'
+     },
     body: JSON.stringify({
       path: path,
       userAddress: userAddress,
