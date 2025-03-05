@@ -67,7 +67,7 @@ const Home: NextPage = () => {
           null,
           null
         );
-        setWinner(winner.data);
+        setWinner(winner.data.message);
       }
     };
     fetchData();
