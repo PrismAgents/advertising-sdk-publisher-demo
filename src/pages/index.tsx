@@ -10,28 +10,24 @@ import axios from 'axios';
 import Image from 'next/image';
 
 // This has to be whitelisted in the prism contract
-const publisher3 = '0xFa214723917091b78a0624d0953Ec1BD35F723DC';
-const publisher = publisher3;
-const websiteUrl = 'berachain.com';
+const publisher = '0x425D1B9561CD03248ba83164215F099f907Eb017';
 
 const callPrismClient = async (
   path: string,
   userAddress: string,
-  publisherAddress: string,
-  hostUrl: string | null,
+  websiteUrl: string,
   auctionWinnerId: string | null
 ): Promise<any> => {
   return fetch('/api/route', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*'
+      'Access-Control-Allow-Origin': '*',
      },
     body: JSON.stringify({
       path: path,
       userAddress: userAddress,
-      publisherAddress: publisherAddress,
-      hostUrl: hostUrl,
+      websiteUrl: websiteUrl,
       auctionWinnerId: auctionWinnerId
     }),
   }).then((res) => res.json())
@@ -47,6 +43,7 @@ const Home: NextPage = () => {
   const [clickCount, setClickCount] = useState<number>(0);
   const [renderCount, setRenderCount] = useState<number>(0);
   const [impressionsCounter, setImpressionsCounter] = useState<number>(0);
+  const [websiteUrl, setWebsiteUrl] = useState<string>('');
 
   const [prismClient, setPrismClient] = useState<any | null>(null);
   const [bannerSource, setBannerSource] = useState<string>('');
@@ -63,25 +60,26 @@ const Home: NextPage = () => {
         const winner = await callPrismClient(
           'trigger-auction',
           address,
-          publisher,
+          websiteUrl,
           null,
-          null
         );
         setWinner(winner.data.message);
       }
     };
     fetchData();
     setIsLoading(false);
+    setWebsiteUrl(window && window.location && window.location.href);
   }, [address]);
 
   const handleLinkClick = () => {
-      if (address && winner) callPrismClient('handleUserClick', address, publisher, websiteUrl, winner.id)
+      if (address && winner) callPrismClient('handleUserClick', address, websiteUrl, winner.id)
       .then(() =>
         setClickCount((prevCount: number) => prevCount + 1)
       );
   }
+
   const sendCompletionFeedback = () => {
-    if (address && winner) callPrismClient('handleViewedFeedback', address, publisher, websiteUrl, winner.id)
+    if (address && winner) callPrismClient('handleViewedFeedback', address, websiteUrl, winner.id)
       .then(() => setRenderCount(prevCount => prevCount + 1));
   }
 
@@ -90,7 +88,6 @@ const Home: NextPage = () => {
       setRenderCount(prevCount => prevCount + 1);
     }
   }, [winner]);
-
 
   return (
     <div className={styles.container}>
@@ -105,9 +102,16 @@ const Home: NextPage = () => {
 
       <div className={styles.navbar}>
         <h1 className={styles.title}>
-          Publishers Website
+          Publisher's Website
         </h1>
         <ConnectButton />
+      </div>
+
+      <div  style={{textAlign: 'left', fontSize: '1.5rem'}}>
+
+         <p><b >Publisher:</b> {publisher}</p>
+         <p><b>Website:</b> {websiteUrl}</p>
+
       </div>
 
       <main className={styles.main}>
