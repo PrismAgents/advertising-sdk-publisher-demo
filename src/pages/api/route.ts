@@ -7,7 +7,7 @@ type ResponseData = {
 }
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   try {
-    const { path, userAddress, hostUrl, auctionWinnerId, websiteUrl } = JSON.parse(JSON.stringify(req.body));
+    const { path, userAddress, auctionWinnerId, websiteUrl } = JSON.parse(JSON.stringify(req.body));
     let responseData = null;
     const publisherAddress = process.env.PUBLISHER_ADDRESS!;
     const prismClient = new PrismClient(process.env.PRISM_SDK_API_KEY!);
@@ -18,11 +18,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         break;
       }
       case 'handleUserClick': {
-        responseData = await prismClient.handleUserClick(publisherAddress,hostUrl, auctionWinnerId);
+        console.log('handleUserClick', publisherAddress, websiteUrl, auctionWinnerId);
+        responseData = await prismClient.handleUserClick(publisherAddress,websiteUrl, auctionWinnerId);
         break;
       }
       case 'handleViewedFeedback': {
-        responseData = await prismClient.sendViewedFeedback(publisherAddress, hostUrl, auctionWinnerId)
+        console.log('handleViewedFeedback', publisherAddress, websiteUrl, auctionWinnerId);
+        responseData = await prismClient.sendViewedFeedback(publisherAddress,websiteUrl, auctionWinnerId)
         break;
       }
       default:

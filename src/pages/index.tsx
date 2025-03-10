@@ -1,7 +1,7 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAccount } from 'wagmi';
 import { getEthersSigner } from '../signer';
 import styles from '../styles/Home.module.css';
@@ -10,7 +10,7 @@ import axios from 'axios';
 import Image from 'next/image';
 
 // This has to be whitelisted in the prism contract
-const publisher = '0x425D1B9561CD03248ba83164215F099f907Eb017';
+const publisher = '0xFa214723917091b78a0624d0953Ec1BD35F723DC';
 
 const callPrismClient = async (
   path: string,
@@ -43,43 +43,46 @@ const Home: NextPage = () => {
   const [clickCount, setClickCount] = useState<number>(0);
   const [renderCount, setRenderCount] = useState<number>(0);
   const [impressionsCounter, setImpressionsCounter] = useState<number>(0);
-  const [websiteUrl, setWebsiteUrl] = useState<string>('');
 
   const [prismClient, setPrismClient] = useState<any | null>(null);
   const [bannerSource, setBannerSource] = useState<string>('');
+
+  const prevAddressRef = useRef<string | undefined>(undefined);
+  const staticWebsiteUrl = 'berachain.com';
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    const fetchData = async () => {
-      if (address) {
-        setIsLoading(true);
-        const winner = await callPrismClient(
-          'trigger-auction',
-          address,
-          websiteUrl,
-          null,
-        );
-        setWinner(winner.data.message);
-      }
-    };
-    fetchData();
-    setIsLoading(false);
-    setWebsiteUrl(window && window.location && window.location.href);
+    if (address !== prevAddressRef.current) {
+      setIsLoading(true);
+      const fetchData = async () => {
+        if (address) {
+          const winner = await callPrismClient(
+            'trigger-auction',
+            address,
+            staticWebsiteUrl,
+            null,
+          );
+          setWinner(winner.data.message);
+        }
+        setIsLoading(false);
+      };
+      fetchData();
+      prevAddressRef.current = address;
+    }
   }, [address]);
 
   const handleLinkClick = () => {
-      if (address && winner) callPrismClient('handleUserClick', address, websiteUrl, winner.id)
+      if (address && winner) callPrismClient('handleUserClick', address, staticWebsiteUrl, winner.id)
       .then(() =>
         setClickCount((prevCount: number) => prevCount + 1)
       );
   }
 
   const sendCompletionFeedback = () => {
-    if (address && winner) callPrismClient('handleViewedFeedback', address, websiteUrl, winner.id)
+    if (address && winner) callPrismClient('handleViewedFeedback', address, staticWebsiteUrl, winner.id)
       .then(() => setRenderCount(prevCount => prevCount + 1));
   }
 
@@ -110,7 +113,6 @@ const Home: NextPage = () => {
       <div  style={{textAlign: 'left', fontSize: '1.5rem'}}>
 
          <p><b >Publisher:</b> {publisher}</p>
-         <p><b>Website:</b> {websiteUrl}</p>
 
       </div>
 
