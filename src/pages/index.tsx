@@ -11,11 +11,11 @@ import Image from 'next/image';
 
 // This has to be whitelisted in the prism contract
 const publisher = process.env.NEXT_PUBLIC_PUBLISHER_ADDRESS;
+const staticWebsiteUrl = process.env.NEXT_PUBLIC_PUBLISHER_DOMAIN;
 
 const callPrismClient = async (
   path: string,
   userAddress: string,
-  websiteUrl: string,
   auctionWinnerId: string | null
 ): Promise<any> => {
   return fetch('/api/route', {
@@ -27,7 +27,6 @@ const callPrismClient = async (
     body: JSON.stringify({
       path: path,
       userAddress: userAddress,
-      websiteUrl: websiteUrl,
       auctionWinnerId: auctionWinnerId
     }),
   }).then((res) => res.json())
@@ -48,7 +47,6 @@ const Home: NextPage = () => {
   const [bannerSource, setBannerSource] = useState<string>('');
 
   const prevAddressRef = useRef<string | undefined>(undefined);
-  const staticWebsiteUrl = 'berachain.com';
 
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(event.target.value);
@@ -62,7 +60,6 @@ const Home: NextPage = () => {
           const winner = await callPrismClient(
             'trigger-auction',
             address,
-            staticWebsiteUrl,
             null,
           );
           setWinner(winner.data.message);
@@ -75,14 +72,14 @@ const Home: NextPage = () => {
   }, [address]);
 
   const handleLinkClick = () => {
-      if (address && winner) callPrismClient('handleUserClick', address, staticWebsiteUrl, winner.id)
+      if (address && winner) callPrismClient('handleUserClick', address, winner.id)
       .then(() =>
         setClickCount((prevCount: number) => prevCount + 1)
       );
   }
 
   const sendCompletionFeedback = () => {
-    if (address && winner) callPrismClient('handleViewedFeedback', address, staticWebsiteUrl, winner.id)
+    if (address && winner) callPrismClient('handleViewedFeedback', address, winner.id)
       .then(() => setRenderCount(prevCount => prevCount + 1));
   }
 

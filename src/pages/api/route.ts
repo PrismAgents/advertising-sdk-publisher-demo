@@ -7,24 +7,27 @@ type ResponseData = {
 }
 export default async function handler(req: NextApiRequest, res: NextApiResponse<ResponseData>) {
   try {
-    const { path, userAddress, auctionWinnerId, websiteUrl } = JSON.parse(JSON.stringify(req.body));
+    const { path, userAddress, auctionWinnerId } = JSON.parse(JSON.stringify(req.body));
     let responseData = null;
+    
     const publisherAddress = process.env.PUBLISHER_ADDRESS!;
+    const publisherDomain = process.env.PUBLISHER_DOMAIN!;
+
     const prismClient = new PrismClient(process.env.PRISM_SDK_API_KEY!);
     switch (path) {
       case 'trigger-auction': {
-        console.log('trigger-auction', publisherAddress, userAddress, websiteUrl);
-        responseData = await prismClient.triggerAuction(publisherAddress,userAddress, websiteUrl);
+        console.log('trigger-auction', publisherAddress, userAddress, publisherDomain);
+        responseData = await prismClient.triggerAuction(publisherAddress, userAddress, publisherDomain);
         break;
       }
       case 'handleUserClick': {
-        console.log('handleUserClick', publisherAddress, websiteUrl, auctionWinnerId);
-        responseData = await prismClient.handleUserClick(publisherAddress,websiteUrl, auctionWinnerId);
+        console.log('handleUserClick', publisherAddress, publisherDomain, auctionWinnerId);
+        responseData = await prismClient.handleUserClick(publisherAddress, publisherDomain, auctionWinnerId);
         break;
       }
       case 'handleViewedFeedback': {
-        console.log('handleViewedFeedback', publisherAddress, websiteUrl, auctionWinnerId);
-        responseData = await prismClient.sendViewedFeedback(publisherAddress,websiteUrl, auctionWinnerId)
+        console.log('handleViewedFeedback', publisherAddress, publisherDomain, auctionWinnerId);
+        responseData = await prismClient.sendViewedFeedback(publisherAddress, publisherDomain, auctionWinnerId)
         break;
       }
       default:
