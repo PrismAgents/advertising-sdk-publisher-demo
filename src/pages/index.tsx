@@ -10,7 +10,7 @@ import axios from 'axios';
 import Image from 'next/image';
 
 // This has to be whitelisted in the prism contract
-const publisher = '0xFa214723917091b78a0624d0953Ec1BD35F723DC';
+const publisher = process.env.NEXT_PUBLIC_PUBLISHER_ADDRESS;
 
 const callPrismClient = async (
   path: string,
@@ -112,7 +112,8 @@ const Home: NextPage = () => {
 
       <div  style={{textAlign: 'left', fontSize: '1.5rem'}}>
 
-         <p><b >Publisher:</b> {publisher}</p>
+         <p><b >Publisher:</b> {process.env.NEXT_PUBLIC_PUBLISHER_ADDRESS}</p>
+         <p><b >Publisher Domain:</b> {process.env.NEXT_PUBLIC_PUBLISHER_DOMAIN}</p>
 
       </div>
 
