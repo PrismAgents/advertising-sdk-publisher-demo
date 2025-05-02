@@ -16,7 +16,7 @@ const staticWebsiteUrl = process.env.NEXT_PUBLIC_PUBLISHER_DOMAIN;
 const callPrismClient = async (
   path: string,
   userAddress: string,
-  auctionWinnerId: string | null
+  campaignId: string | null
 ): Promise<any> => {
   return fetch('/api/route', {
     method: 'POST',
@@ -27,7 +27,7 @@ const callPrismClient = async (
     body: JSON.stringify({
       path: path,
       userAddress: userAddress,
-      auctionWinnerId: auctionWinnerId
+      campaignId: campaignId
     }),
   }).then((res) => res.json())
     .catch(error => console.error("Error:", error));
@@ -58,28 +58,34 @@ const Home: NextPage = () => {
       const fetchData = async () => {
         if (address) {
           const winner = await callPrismClient(
-            'trigger-auction',
+            'auction',
             address,
             null,
           );
-          setWinner(winner.data.message);
+          sessionStorage.setItem('winner',JSON.stringify(winner.data.campaignId));
+          setWinner(winner.data);
         }
         setIsLoading(false);
       };
       fetchData();
       prevAddressRef.current = address;
     }
+
   }, [address]);
 
-  const handleLinkClick = () => {
-      if (address && winner) callPrismClient('handleUserClick', address, winner.id)
+  const handleClicks = () => {
+      const campaignId = JSON.parse(sessionStorage.getItem('winner') || '{}');
+      console.log('winner sessionStorage', campaignId)
+      if (address && campaignId) callPrismClient('clicks', address, campaignId)
       .then(() =>
         setClickCount((prevCount: number) => prevCount + 1)
       );
   }
 
-  const sendCompletionFeedback = () => {
-    if (address && winner) callPrismClient('handleViewedFeedback', address, winner.id)
+  const handleImpressions = () => {
+    const campaignId = JSON.parse(sessionStorage.getItem('winner') || '{}');
+
+    if (address && campaignId) callPrismClient('impressions', address, campaignId)
       .then(() => setRenderCount(prevCount => prevCount + 1));
   }
 
@@ -141,20 +147,20 @@ const Home: NextPage = () => {
           </button>
         </div> */}
 
-        {winner?.banner_ipfs_uri && !isLoading && (
+        {winner?.bannerIpfsUri && !isLoading && (
           <a
             className={styles.card}
-            href="https://www.berachain.com/"
+            href={winner.url}
             target="_blank"
-            onClick={handleLinkClick}
+            onClick={handleClicks}
           >
-            <h2>{winner.campaign_name}</h2>
+            <h2>{winner.campaignName}</h2>
             <Image
               width={500}
               height={500}
-              src={winner.banner_ipfs_uri}
-              alt={winner.campaign_name}
-              onLoad={() => sendCompletionFeedback()}
+              src={winner.bannerIpfsUri || 'https://placehold.co/300x250'}
+              alt={winner.campaignName}
+              onLoad={() => handleImpressions()}
             />
           </a>
         )}
@@ -209,7 +215,7 @@ const Home: NextPage = () => {
               </button> */}
           </div>
           <Image
-            src={bannerSource}
+            src={bannerSource || 'https://placehold.co/300x250'}
             width={300}
             height={250}
             alt="Banner"
