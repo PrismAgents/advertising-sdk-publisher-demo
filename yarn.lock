@@ -3146,10 +3146,10 @@ prelude-ls@^1.2.1:
   resolved "https://registry.npmjs.org/prelude-ls/-/prelude-ls-1.2.1.tgz"
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
 
-prism-sdk@^1.1.35:
-  version "1.1.35"
-  resolved "https://registry.yarnpkg.com/prism-sdk/-/prism-sdk-1.1.35.tgz#0e46b2693306818b96bd951aec3f10a5ca436f72"
-  integrity sha512-XUpFx3PcCDjuAQvDjPcut89qq2kSp+Oqd48uJHMKcn6zZQkCw332Cf7d6ls9f01Kia2GBTw0TXWkUiYTRAhTGA==
+prism-sdk@^1.1.39:
+  version "1.1.39"
+  resolved "https://registry.yarnpkg.com/prism-sdk/-/prism-sdk-1.1.39.tgz#31fbae2e063f96709c78264973f76269644d486c"
+  integrity sha512-qnTSd1crM+sVk5/bdK2dtCmpm5JZg4J04C5wYu+XO1Ubn+mVs6Z7o6LvxKk4gVPv/wEKSE72c+dr5DEfME0edg==
   dependencies:
     dotenv "^16.4.7"
     ethers "^6.13.4"

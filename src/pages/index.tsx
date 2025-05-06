@@ -54,7 +54,7 @@ const Home: NextPage = () => {
   const handleClicks = () => {
       if (address && prismWinner) PrismClient.clicks(
         address,
-        prismWinner.url,
+        publisherDomain,
         prismWinner.campaignId,
         prismWinner.jwt_token
       )
