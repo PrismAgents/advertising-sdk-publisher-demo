@@ -1,83 +1,50 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import type { NextPage } from 'next';
 import Head from 'next/head';
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from 'react';
 import { useAccount } from 'wagmi';
-import { getEthersSigner } from '../signer';
 import styles from '../styles/Home.module.css';
-import { wagmiConfig } from '../wagmi';
-import axios from 'axios';
 import Image from 'next/image';
-import { PrismClient ,PrismWinner} from 'prism-sdk';
+import { PrismClient, PrismWinner } from 'prism-sdk';
 
 
 const publisherAddress = '0xFa214723917091b78a0624d0953Ec1BD35F723DC'; // example publisher address
 const publisherDomain = 'https://prism-ads-publisher-1.netlify.app'; // example publisher domain
 
 const Home: NextPage = () => {
-  const { address } = useAccount()
-  const [inputValue, setInputValue] = useState<string>('');
-  const [isLoading, setIsLoading] = useState<boolean>(false); // New state for loading
-  const [error, setError] = useState<any | null>(null);
-  const [clickCount, setClickCount] = useState<number>(0);
-  const [renderCount, setRenderCount] = useState<number>(0);
-  const [impressionsCounter, setImpressionsCounter] = useState<number>(0);
+  const { address } = useAccount();
+  const [winner, setWinner] = useState<PrismWinner | null>(null);
   const [bannerSource, setBannerSource] = useState<string>('');
-  const prevAddressRef = useRef<string | undefined>(undefined);
-  const [prismWinner, setPrismWinner] = useState<PrismWinner>();
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(event.target.value);
-  };
 
   useEffect(() => {
-    if (address !== prevAddressRef.current) {
-      setIsLoading(true);
-      const fetchData = async () => {
-        if (address) {
-          const winner : PrismWinner = await PrismClient.auction(
-            publisherAddress,
-            publisherDomain,
-            address
-          );
-          console.log('winner', winner);
-          setPrismWinner(winner);
-        }
-        setIsLoading(false);
-      };
-      fetchData();
-      prevAddressRef.current = address;
-    }
-
+    console.log('Connected wallet address:', address);
+    console.log('Address type:', typeof address);
+    
+    PrismClient.init(
+      publisherAddress,
+      publisherDomain.replace('https://', ''),
+      {
+        connectedWallet: address, // Works even if undefined
+        onSuccess: (winner) => {
+          console.log('Winner received:', winner);
+          setWinner(winner);
+        },
+        onError: (error) => console.error('Ad load failed:', error)
+      }
+    );
   }, [address]);
 
-  const handleClicks = () => {
-      if (address && prismWinner) PrismClient.clicks(
-        publisherAddress,
-        publisherDomain,
-        prismWinner.campaignId,
-        prismWinner.jwt_token
-      )
-      .then(() =>
-        setClickCount((prevCount: number) => prevCount + 1)
-      );
-  }
-
-  const handleImpressions = () => {
-
-    if (address && prismWinner) PrismClient.impressions(
+  const handleAdClick = (winner: PrismWinner) => {
+    PrismClient.clicks(
       publisherAddress,
-      publisherDomain,
-      prismWinner.campaignId,
-      prismWinner.jwt_token
-    )
-  }
+      winner.url,
+      winner.campaignId,
+      winner.jwt_token
+    );
+    window.open(winner.url, '_blank');
+  };
 
-  useEffect(() => {
-    if (prismWinner) {
-      setRenderCount(prevCount => prevCount + 1);
-    }
-  }, [prismWinner]);
 
   return (
     <div className={styles.container}>
@@ -108,72 +75,41 @@ const Home: NextPage = () => {
 
 
 
-
-        {/* <div className={styles.mockContainer}>
-          <div className={styles.mock}></div>
-           <div className={styles.mock}>&nbsp;</div>
-          <div className={styles.mock}>&nbsp;</div>
-          <div className={styles.mock}>&nbsp;</div>
-        </div> */}
-
-
-
-        {/* <div className={styles.inputContainer}>
-          <input
-            type="text"
-            value={inputValue}
-            onChange={handleInputChange} // Add this line
-            className={styles.inputField}
-            placeholder="Enter wallet address"
-          />
-          <button onClick={handleSearch} className={styles.searchButton}>
-            Search
-          </button>
-        </div> */}
-
-        {prismWinner?.bannerIpfsUri && !isLoading && (
-          <a
+        {winner && winner.bannerIpfsUri ? (
+          <div 
             className={styles.card}
-            href={prismWinner.url}
-            target="_blank"
-            onClick={handleClicks}
+            onClick={() => handleAdClick(winner)}
           >
-            <h2>{prismWinner.campaignName}</h2>
+            <h2>{winner.campaignName}</h2>
             <Image
               width={500}
               height={500}
-              src={prismWinner.bannerIpfsUri || 'https://placehold.co/300x250'}
-              alt={prismWinner.campaignName}
-              onLoad={() => handleImpressions()}
+              src={winner.bannerIpfsUri}
+              alt={winner.campaignName}
+              onLoad={() => {
+                PrismClient.impressions(
+                  publisherAddress,
+                  publisherDomain,
+                  winner.campaignId,
+                  winner.jwt_token,
+                  {
+                    onError: (error) => console.error('Failed to track impression:', error.message)
+                  }
+                );
+              }}
+              onError={() => {
+                console.error('Failed to load ad image');
+              }}
             />
-          </a>
+          </div>
+        ) : (
+          <div>Loading ads...</div>
         )}
 
-        {isLoading &&
-          <div className={styles.loaderContainer}>
-            <div className={styles.loader}></div>
-          </div>
-        }
-
         <div className={styles.grid}>
-
-
-          {/* <a
-                className={styles.card}
-                href="http://13.58.91.209:3000/"
-              >
-                <h2>Prism API Docs &rarr;</h2>
-                <p>
-                  Swagger API Docs for Prism API
-                </p>
-              </a> */}
         </div>
 
 
-        <div>
-          {/* <p>Link clicked: {clickCount} times</p>
-          <p>Image rendered: {renderCount} times</p> */}
-        </div>
 
         <div className={styles.bannerContainer}>
           <div>
@@ -207,7 +143,7 @@ const Home: NextPage = () => {
             onError={(e: any) => {
               e.target.src = bannerSource == '' ? 'https://placehold.co/300x250' : 'https://placehold.co/300x250?text=Invalid+Banner+Image';
             }}
-            onLoad={() => setIsLoading(false)}
+            onLoad={() => {}}
           />
         </div>
       </main>
