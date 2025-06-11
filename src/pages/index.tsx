@@ -25,7 +25,13 @@ const Home: NextPage = () => {
   const [debugLogs, setDebugLogs] = useState<LogEntry[]>([]);
   const [showDebug, setShowDebug] = useState<boolean>(true);
   const debugBoxRef = useRef<HTMLDivElement>(null);
-  const [autoTrigger, setAutoTrigger] = useState<boolean>(true);
+  const [autoTrigger, setAutoTrigger] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('prism-autotrigger');
+      return saved ? JSON.parse(saved) : true;
+    }
+    return true;
+  });
 
   const addLog = (type: LogEntry['type'], message: string, data?: any) => {
     const newLog: LogEntry = {
@@ -148,6 +154,7 @@ const Home: NextPage = () => {
                   checked={autoTrigger}
                   onChange={(e) => {
                     setAutoTrigger(e.target.checked);
+                    localStorage.setItem('prism-autotrigger', JSON.stringify(e.target.checked));
                     addLog('info', `Auto trigger ${e.target.checked ? 'enabled' : 'disabled'}`, {
                       autoTrigger: e.target.checked
                     });
