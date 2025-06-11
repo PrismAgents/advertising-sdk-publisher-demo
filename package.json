@@ -10,6 +10,7 @@
   "dependencies": {
     "@rainbow-me/rainbowkit": "^2.2.0",
     "@tanstack/react-query": "^5.55.3",
+    "@wagmi/core": "^2.14.1",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
