@@ -14,6 +14,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.55.3
         version: 5.69.0(react@18.3.1)
+      '@wagmi/core':
+        specifier: ^2.14.1
+        version: 2.16.7(@tanstack/query-core@5.69.0)(@types/react@19.0.8)(react@18.3.1)(typescript@5.5.2)(use-sync-external-store@1.4.0(react@18.3.1))(viem@2.17.0(bufferutil@4.0.9)(typescript@5.5.2)(utf-8-validate@5.0.10))
       axios:
         specifier: ^1.7.9
         version: 1.8.4
