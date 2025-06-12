@@ -1,3 +1,4 @@
+"use client";
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import type { NextPage } from 'next';
 import Head from 'next/head';
@@ -5,7 +6,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useAccount } from 'wagmi';
 import styles from '../styles/Home.module.css';
 import Image from 'next/image';
-import { PrismClient, PrismWinner } from 'prism-sdk';
+import { usePrismSDK, type PrismWinner } from "prism-sdk/react";
 
 
 const publisherAddress = '0xFa214723917091b78a0624d0953Ec1BD35F723DC'; // example publisher address
@@ -20,6 +21,7 @@ interface LogEntry {
 
 const Home: NextPage = () => {
   const { address } = useAccount();
+  const { init, clicks, impressions } = usePrismSDK({ publisherAddress, publisherDomain });
   const [winner, setWinner] = useState<PrismWinner | null>(null);
   const [bannerSource, setBannerSource] = useState<string>('');
   const [debugLogs, setDebugLogs] = useState<LogEntry[]>([]);
@@ -32,6 +34,7 @@ const Home: NextPage = () => {
     }
     return true;
   });
+  const [mounted, setMounted] = useState(false);
 
   const addLog = (type: LogEntry['type'], message: string, data?: any) => {
     const newLog: LogEntry = {
@@ -58,6 +61,12 @@ const Home: NextPage = () => {
 
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    
     addLog('info', 'SDK configuration changed', { 
       address: address || 'Not connected', 
       walletConnected: !!address,
@@ -69,13 +78,11 @@ const Home: NextPage = () => {
       connectedWallet: address,
       autoTrigger
     });
-    
-    PrismClient.init(
-      publisherAddress,
-      publisherDomain.replace('https://', ''),
-      {
-        connectedWallet: address,
-        autoTrigger,
+
+    init({
+      autoTrigger,
+        getWalletAddress: () => address,
+        walletDetectionTimeout: 2000,
         onSuccess: (winner) => {
           addLog('success', 'Ad winner received', {
             campaignId: winner.campaignId,
@@ -87,9 +94,9 @@ const Home: NextPage = () => {
         onError: (error) => {
           addLog('error', 'Ad load failed', error);
         }
-      }
-    );
-  }, [address, autoTrigger]);
+    })
+    
+  }, [autoTrigger, address, mounted]);
 
   const handleAdClick = (winner: PrismWinner) => {
     addLog('info', 'Ad clicked - tracking click event', {
@@ -97,18 +104,18 @@ const Home: NextPage = () => {
       url: winner.url
     });
     
-    try {
-      PrismClient.clicks(
-        publisherAddress,
-        winner.url,
-        winner.campaignId,
-        winner.jwt_token
-      );
-      addLog('success', 'Click event tracked successfully');
+      clicks(winner.campaignId, winner.jwt_token, {
+        onSuccess: () => {
+          addLog('success', 'Click event tracked successfully', {
+            campaignId: winner.campaignId,
+            url: winner.url
+          });
+        },
+        onError: (error) => {
+          addLog('error', 'Failed to track click event', error);
+        }
+      })
       window.open(winner.url, '_blank');
-    } catch (error) {
-      addLog('error', 'Failed to track click event', error);
-    }
   };
 
 
@@ -143,7 +150,7 @@ const Home: NextPage = () => {
           </div>
           <div className={styles.configItem}>
             <strong>Connected Wallet:</strong>
-            <span>{address || 'Not connected'}</span>
+            <span>{mounted ? (address || 'Not connected') : 'Loading...'}</span>
           </div>
           <div className={styles.configItem}>
             <strong>Auto Trigger:</strong>
@@ -209,22 +216,16 @@ const Home: NextPage = () => {
                       addLog('info', 'Ad image loaded - tracking impression', {
                         campaignId: winner.campaignId
                       });
-                      try {
-                        PrismClient.impressions(
-                          publisherAddress,
-                          publisherDomain,
-                          winner.campaignId,
-                          winner.jwt_token,
-                          {
-                            onError: (error) => {
-                              addLog('error', 'Failed to track impression', error);
-                            }
+                        impressions(winner.campaignId, winner.jwt_token,  {
+                          onSuccess: () => {
+                            addLog('success', 'Impression tracked successfully', {
+                              campaignId: winner.campaignId
+                            });
+                          },
+                          onError: (error) => {
+                            addLog('error', 'Failed to track impression', error);
                           }
-                        );
-                        addLog('success', 'Impression tracked successfully');
-                      } catch (error) {
-                        addLog('error', 'Failed to track impression', error);
-                      }
+                        })
                     }}
                     onError={() => {
                       addLog('error', 'Failed to load ad image');

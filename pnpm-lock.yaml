@@ -33,8 +33,8 @@ importers:
         specifier: 15.0.1
         version: 15.0.1(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       prism-sdk:
-        specifier: 1.2.0
-        version: 1.2.0(bufferutil@4.0.9)(typescript@5.5.2)(utf-8-validate@5.0.10)
+        specifier: 2.2.0
+        version: 2.2.0(react@18.3.1)(typescript@5.5.2)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -1567,11 +1567,14 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prism-sdk@1.2.0:
-    resolution: {integrity: sha512-kZiG3erp5VWFK2IR05C921/xcG0BNjH7aiMRxvxBjXgKL28ngR4SlQJp1jWoBZL69MVPnedbO9KLmcaG5+DXvQ==}
+  prism-sdk@2.2.0:
+    resolution: {integrity: sha512-4DLQ4KzzeM+5hm9xZnOG3o8c4fi5uVnjcuFO3dRPGmibxpQ787bLaKX9EEl1f1sibamaUkKlNNeqC9UVH4g/mw==}
     peerDependencies:
+      react: '>=18'
       typescript: '*'
     peerDependenciesMeta:
+      react:
+        optional: true
       typescript:
         optional: true
 
@@ -4023,15 +4026,10 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prism-sdk@1.2.0(bufferutil@4.0.9)(typescript@5.5.2)(utf-8-validate@5.0.10):
-    dependencies:
-      dotenv: 16.4.7
-      ethers: 6.13.5(bufferutil@4.0.9)(utf-8-validate@5.0.10)
+  prism-sdk@2.2.0(react@18.3.1)(typescript@5.5.2):
     optionalDependencies:
+      react: 18.3.1
       typescript: 5.5.2
-    transitivePeerDependencies:
-      - bufferutil
-      - utf-8-validate
 
   process-nextick-args@2.0.1: {}
 
