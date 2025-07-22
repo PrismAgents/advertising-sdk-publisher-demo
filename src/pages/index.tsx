@@ -6,6 +6,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useAccount } from 'wagmi';
 import styles from '../styles/Home.module.css';
 import Image from 'next/image';
+import { PrismClient } from "prism-sdk";
 import { usePrismSDK, type PrismWinner } from "prism-sdk/react";
 
 
@@ -27,14 +28,38 @@ const Home: NextPage = () => {
   const [debugLogs, setDebugLogs] = useState<LogEntry[]>([]);
   const [showDebug, setShowDebug] = useState<boolean>(true);
   const debugBoxRef = useRef<HTMLDivElement>(null);
-  const [autoTrigger, setAutoTrigger] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('prism-autotrigger');
-      return saved ? JSON.parse(saved) : true;
-    }
-    return true;
-  });
+
   const [mounted, setMounted] = useState(false);
+  const [autoTrigger, setAutoTrigger] = useState<boolean>(true); // Default for SSR
+  useEffect(() => {
+    const saved = localStorage.getItem('prism-autotrigger');
+    if (saved !== null) {
+      setAutoTrigger(JSON.parse(saved));
+    }
+  }, []);
+
+
+    const loadAdManually = async () => {
+      try {
+        addLog('info', 'Manually triggering Prism auction');
+        const result = await PrismClient.auction(
+          publisherAddress,
+          publisherDomain.replace('https://', ''),
+          address!
+        );
+        setWinner(result);
+        addLog('success', 'Manual auction successful', result);
+      } catch (err) {
+        addLog('error', 'Manual auction failed', err);
+      }
+    };
+
+    useEffect(() => {
+      if (!mounted || autoTrigger || !address || winner) return;
+      loadAdManually();
+    }, [autoTrigger, address, mounted]);
+
+
 
   const addLog = (type: LogEntry['type'], message: string, data?: any) => {
     const newLog: LogEntry = {
